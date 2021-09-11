@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="memberMapper">
+  <resultMap type="Member" id="memberResultSet">
+  	<id property="memId" column="mem_id"/>
+  	<result property="memName" column="mem_name"/>
+  	<result property="memPwd" column="mem_pwd"/>
+  	<result property="memEmail" column="mem_email"/>
+  	<result property="memPhone" column="mem_phone"/>
+  	<result property="memZipcode" column="mem_zipcode"/>
+  	<result property="memBday" column="mem_bday"/>
+  	<result property="memGender" column="mem_gender"/>
+  	<result property="memCreateDate" column="mem_createdate"/>
+  	<result property="memModifyDate" column="mem_modifydate"/>
+  	<result property="memStatus" column="mem_status"/>
+  </resultMap>
+  
+  <resultMap type="Address" id="addressResultSet">
+	<result property="addressNo" column="address_No"/>
+	<result property="memId" column="mem_Id"/>
+	<result property="address" column="address"/>
+	<result property="zipCode" column="zipCode"/>
+	<result property="status" column="status"/>
+	<result property="createDate" column="createDate"/>
+	<result property="modifyDate" column="modifyDate"/>        
+  </resultMap>
+  <select id="loginMember" parameterType="Member" resultMap="memberResultSet">
+  	select
+  		  mem_id
+  		, mem_name
+  		, mem_pwd
+  		, mem_email
+  		, mem_phone
+  		, mem_bday
+  		, mem_gender
+  		, mem_createdate
+  		, mem_modifydate
+  		, mem_status
+  	 from test_member
+  	where  mem_id = #{memId}
+  	  and  mem_status = 'Y'
+  </select>
+  
+  <select id="selectAddress" resultMap="addressResultSet">
+  	select
+  	  	   address_no
+  	  	 , mem_id
+  	  	 , address
+  	  	 , zipcode
+  	  	 , status
+  	  	 , createDate
+  	 from test_address
+  	where  mem_id = #{memId}
+  </select>
+  
+  <select id="selectEachAddress" resultMap="addressResultSet">
+  	select
+  	  	   address_no
+  	  	 , mem_id
+  	  	 , address
+  	  	 , zipcode
+  	  	 , status
+  	  	 , createDate
+  	 from test_address
+  	where  address_no = #{addressNo}
+  </select>
+  
+  <insert id="insertMember" parameterType="Member">
+  	insert
+  	  into test_member
+  	  (
+  	  	   mem_id
+  	  	 , mem_name
+  	  	 , mem_pwd
+  	  	 , mem_email
+  	  	 , mem_phone
+  	  	 , mem_bday
+  	  	 , mem_gender
+  	  	 , mem_createDate
+  	  	 , mem_status
+  	  )
+  	values
+  	(
+  		   #{memId}
+  		 , #{memName}
+  		 , #{memPwd}
+  		 , #{memEmail}
+  		 , #{memPhone}
+  		 , #{memBday}
+  		 , #{memGender}
+  		 , default
+  		 , 'Y'
+  	)
+  </insert>
+  
+  <insert id="insertAddress" parameterType="Address">
+  	insert
+  	  into test_address
+  	  (
+  	  	   address_no
+  	  	 , mem_id
+  	  	 , address
+  	  	 , zipcode
+  	  	 , status
+  	  	 , createDate
+  	  )
+  	values
+  	(
+  		   seq_adr.nextval
+  		 , #{memId}
+  		 , #{address}
+  		 , #{zipCode}
+  		 , default
+  		 , default
+  	)
+  </insert>
+  
+  <insert id="insertAdrList" parameterType="Address">
+  	insert
+  	  into test_address
+  	  (
+  	  	   address_no
+  	  	 , mem_id
+  	  	 , address
+  	  	 , zipcode
+  	  	 , status
+  	  	 , createDate
+  	  )
+  	values
+  	(
+  		   seq_adr.nextval
+  		 , #{memId}
+  		 , #{address}
+  		 , #{zipCode}
+  		 , 'N'
+  		 , default
+  	)
+  </insert>
+  <select id="idCheck" resultType="_int">
+  	select
+  		  count(*)
+  	 from test_member
+  	where mem_id = #{memId}
+  </select>
+  
+  <update id="updatePwd" parameterType="Member">
+  	update
+  		  test_member
+  	  set mem_pwd = #{memPwd}
+  	where mem_id = #{memId}
+  	  and mem_status = 'Y'
+  </update>
+  
+  <update id="updateAdr" parameterType="Address">
+  	update
+  		  test_address
+  	  set address = #{address}
+  	  	, zipcode = #{zipCode}
+  	 where address_no = #{addressNo}
+  </update>
+</mapper>
