@@ -17,21 +17,83 @@
 		flex-direction: column;
 		width: 80%;
 	}
-	button[name=check], .addF{
-		width: 300px;
+	.btn_verify, button[name=check], .addF{
+		position:absolute;
+		width: 115px;
+		height: 51px;
+		top:0;
+		right:0;
+		text-align: center;
+		box-sizing: border-box;
+		cursor: pointer;
+		text-decoration: none;
+		display: block;
+		font-size: 15px;
+		padding: 17px 0 17px;
+	}
+	.btn_primary{
+		color:#fff;
+		border:solid 1px rgba(0, 0, 0, .08);
+		background-color: #03c75a;
 	}
 	input{
 		width: 100%;
+		height: 50px;
+	}
+	.join_title{
+		margin: 19px 0 8px;
+		font-size: 14px;
+		font-weight: 700;
+	}
+	.mem_area{
+		position: relative;
+		margin-top:10px;
+		padding:0 125px 0 0;
+	}
+	.id_next{
+		position:absolute;
+		top: 16px;
+		right: 13px;
+	}
+	.ps_box{
+		display: block;
+		position:relative;
+		width: 100%;
+		border: solid 1px #dadada;
+		padding: 10px 110px 10px 14px;
+		box-sizing: border-box;
+	}
+	.join_id{
+		display: inline-block;
+		width: 100%;
+		padding:10px 15px 10px 14px;
+		vertical-align: top;
 	}
 </style>
 </head>
 <body>
 <jsp:include page="../common/header.jsp"/>
-
+<div class="container">
 <h2>회원가입</h2>
 <br>
 <form id="enrollForm" action="insert.me" method="POST">
 	<div class="wrapper">
+		<!-- 아이디 -->
+		<div class="join_row">
+			<h3 class="join_title"><label for="id">아이디</label></h3>
+			<div class="mem_area">
+				<span class="ps_box join_id"><input type="text" id="memId" name="memId" required></span>
+				<a class="btn_verify btn_primary" role="button" name="check">id중복체크</a>
+			</div>
+			<span class="error_next_box" id="idMsg"></span>
+		</div>
+		<!-- 비밀번호 -->
+		<div class="join_row">
+			<h3 class="join_title"><label for="pwd1">비밀번호</label></h3>
+			<div class="ps_box">
+				<input type="password" name=memPwd"" id="memPwd">
+			</div>
+		</div>
     	<label for="memId">* ID : 숫자 1개 이상 포함해 총 8~13자 입력</label>
         <input type="text" id="memId" name="memId" required>
         <div id="checkResult" style="font-size:0.8em; display:none;"></div><br>
@@ -79,6 +141,8 @@
 		<button type="reset" class="btn btn-danger"> 초기화</button>
 	</div>
 </form>
+</div>
+
 
 <script>
 var idReg = /^[a-z0-9]{6,13}$/;
