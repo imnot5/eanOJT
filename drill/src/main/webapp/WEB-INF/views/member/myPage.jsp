@@ -52,20 +52,16 @@
         margin: 5px;
     }
     button{
-    	width:100px;
-    	height:40px;
+    	width:100px !important;
+    	height:40px !important;
     }
 </style>
 </head>
 <body>
 	<jsp:include page="../common/header.jsp"/>
-	
-<c:if test="${ !empty alertMsg }">
-<script>window.alert("${alertMsg}")
-window.open("about:blank","_self").close();</script>
-<c:remove var="alertMsg" scope="session"/>
-</c:if>
-<h2>${ loginUser.memName }님의 마이페이지</h2>
+
+<div class="container">
+<h2>${ loginUser.memId }님의 마이페이지</h2>
 <div class="wrapper">
     <div class="nameSection">
         <label for="memName">이름:</label>
@@ -73,7 +69,7 @@ window.open("about:blank","_self").close();</script>
     </div>
     <div class="idSection">
         <label for="memId">아이디:</label>
-        <input type="text" name="memId" value="${ loginUser.memId }" readonly>
+        <input type="text" value="${ loginUser.memId }" readonly>
     </div>
     <div class="password">
         <label for="">비밀번호수정하기</label>
@@ -95,19 +91,26 @@ window.open("about:blank","_self").close();</script>
         <input type="email" name="memEmail" id="email" value="${loginUser.memEmail}">
     </div>
     <div class="address">
-        <!-- 주소받아와서 콤마로 스플릿한뒤에 반복문 돌려 넣기 -->
-        <label for="address">주소: </label>
-        <c:forEach var="i" items="${ adrList }">
-        <input type="text" id="sample_postcode" value="${adrList[0].zipCode}"><br>
-		<input type="text" id="sample_address" name="memAddress"><br>
-		<input type="text" id="sample_detailAddress" name="memAddress">
-        </c:forEach>
-    </div>
-    <div class="modifyAdd">
-        <button type="button">변경하기</button>
+    	<label for="address">주소: </label>
+    	<div class="btnBox" style="float:right; padding:10px 0"><button type="button" onclick="adrNewForm();">추가하기</button></div>
+        <table class="table">
+            <thead>
+                <tr>
+                	<th>번호</th>
+                    <th>배송지</th>
+                    <th>주소</th>
+                    <th>수정/삭제</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
     </div>
 </div>
+</div>
 
+<!-- 비밀번호 모달 -->
 <div class="pwdModal">
     <div class="pwdModalBody">
     <div class="close">&times;</div>
@@ -126,37 +129,9 @@ window.open("about:blank","_self").close();</script>
     </div>
 </div>
 
-<div class="addressModal">
-    <div class="addModalBoby">
-        <div class="close">&times;</div>
-        <table border="1">
-            <thead>
-                <tr>
-                	<th>번호</th>
-                    <th>배송지</th>
-                    <th>주소</th>
-                    <th>수정/삭제</th>
-                </tr>
-            </thead>
-            <tbody>
-            <c:forEach var="i" items="${ adrList }">
-            <tr>
-            	<td>${ i.addressNo }</td>
-            	<td>기본배송지</td>
-                <td>
-                <input type="text" id="sample6_postcode" placeholder="우편번호" name="adrList[${i}].zipCode" value="${ i.zipCode }">
-                <input type="text" id="sample6_address" placeholder="주소" name="adrList[ ${i}].address">
-                <input type="text" id="sample6_detailAddress" name="adrList[ ${i}].address">
-                </td>
-                <td><button type="button" class="modifyPop">수정</button> <button>삭제</button></td>
-            </tr>
-            </c:forEach>
-            </tbody>
-        </table>
-        <div class="btnBox"><button type="button" class="close">닫기</button></div>
-    </div>
-</div>
 <script>
+	selectAdrList();
+	
 	var pwdReg =/^(?=.*[0-9])(?=.*[!@#\$%\^&\*]).{8,16}$/;
     var pwCheck = false;
     var oldPw = "";
@@ -185,23 +160,17 @@ window.open("about:blank","_self").close();</script>
     })
 
     $(function(){
-    	selectMyAdrList();
+    	
         $(".modifyPwd").on("click", function(){
             $(".pwdModal").addClass("show");
         })
         $(".close").on("click", function(){
             $(".pwdModal").removeClass("show");
-            $(".addressModal").removeClass("show");
         })
         $(".modifyAdd button").on("click", function(){
         	$(".addressModal").addClass("show");
         })
-        var adrNo = $(".addressModal table tbody tr").children().eq(0).text();
-        console.log(adrNo);
-        var href = "addressPop.me?adrNo=" + adrNo
-        $(".modifyPop").on("click", function(){
-        	window.open(href,"_blank","width=600px, height=400px, scrollbars=yes");
-        })
+
         var address = "${adrList[0].address}";
         console.log(address);
         var addressArr = address.split(",");
@@ -209,36 +178,41 @@ window.open("about:blank","_self").close();</script>
         	$(this).val(addressArr[idx]);
         })
         
-/*         $(".addressModal input:text").each(function(idx){
-    	$(this).nextAll().val(addressArr[idx]);
-    	}) */
-    	
         $("input:radio[value=${loginUser.memGender}]").prop("checked", true);
     })
-    function selectMyAdrList(){
-    	var mem = 'user06';
-        $.ajax({
-        	url:"adrPage.me",
-        	data:mem,
-        	type:"post",
-        	contentType:"application/json; charset=UTF-8",
-        	dataType:"json",
-        	success:function(adrList){
-        		console.log(adrList);
-        		var result ="";
-        		for(var i=0; i<adrList.length; i++){
-        			result  += "<tr>"
-        					+ "<td>" + adrList[i].addressNo + "</td>"
-        					+ "<td>" + 배송지이름추가해야함 + "</td>"
-        					+ "<td>" + adrList[i].zipCode+ "<br>" + adrList[i].address + "</td>"
-        					+ "<td>" + 수정/삭제버튼 + "</td>"
-        					+ "</tr>";
-        		}
-        		$(".addressModal tbody").html(result);
-        	}, error:function(){
-        		console.log("ajax실패");
-        	}
-        })
+    
+    function modifyPop(adrNo){
+    	 var href = "addressPop.me?adrNo=" + adrNo
+    	 window.open(href,"_blank","width=600px, height=400px, scrollbars=yes");
+    }
+    /* 주소 추가  */
+    function adrNewForm(){
+    	window.open("adrNewForm.me","_blank","width=600px, height=400px, scrollbars=yes");
+    }
+	function selectAdrList(){
+		var memId = '${loginUser.memId}'
+    	console.log("memId"+memId)
+    	$.ajax({
+    		url:"xxx.me",
+    		dataType:"json",
+    		contentType:"application/json; charset=UTF-8;",
+    		type:"post",
+    		data: memId,
+    		success:function(json){
+    			console.log(json);
+    			var result ="";
+    			for(var i=0; i<json.length; i++){
+    				result += "<tr>" + "<td>" + json[i].addresesNo + "</td>"
+    								 + "<td>" + json[i].aka + "</td>"
+    								 + "<td>" + json[i].zipCode + json[i].Address +"</td>"
+    								 + "<td>" + "버튼자리" +"</td>"
+    						+ "</tr>";
+    			};
+    			$("table tbody").html(result);
+    		}, error:function(){
+    			console.log("ajax실패");
+    		}
+    	})
     }
 
     function sample6_execDaumPostcode() {

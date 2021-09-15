@@ -20,6 +20,13 @@
 </style>
 </head>
 <body>
+	<c:if test="${ !empty alertMsg }">
+		<script>
+			window.alert("${alertMsg}");
+			window.open("about:blank","_self").close();</script>
+		</script>
+		<c:remove var="alertMsg" scope="session"/>
+	</c:if>
 <div class="container">
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <a class="navbar-brand" href="#">Drills</a>
@@ -33,7 +40,7 @@
         <a class="nav-link" href="${pageContext.request.contextPath }">Home</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Notice</a>
+        <a class="nav-link" href="listView.no">Notice</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#">Board</a>
@@ -64,7 +71,7 @@
 			<c:otherwise>
 		      <li class="nav-item dropdown">
 		        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-		          ${loginUser.memName }님 환영합니다.
+		          ${loginUser.memId }님 환영합니다.
 		        </a>
 		        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
 		          <a class="dropdown-item" href="myPage.me">마이페이지</a>

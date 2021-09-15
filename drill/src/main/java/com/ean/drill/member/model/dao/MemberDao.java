@@ -28,15 +28,17 @@ public class MemberDao {
 	public int insertAddress(SqlSessionTemplate sqlSession, Address adr) {
 		return sqlSession.insert("memberMapper.insertAddress", adr);
 	}
-	
-	public int insertAddressList(SqlSessionTemplate sqlSession, ArrayList<Address> adrList) {
-		
-		int result = 0;
-		for(Address adr : adrList) {
-			result = sqlSession.insert("memberMapper.insertAdrList", adr);
-		}
-		return result;
+	public int insertNewAdress(SqlSessionTemplate sqlSession, Address adr) {
+		return sqlSession.insert("memberMapper.insertNewAddress", adr);
 	}
+	
+	/*
+	 * public int insertAddressList(SqlSessionTemplate sqlSession,
+	 * ArrayList<Address> adrList) {
+	 * 
+	 * int result = 0; for(Address adr : adrList) { result =
+	 * sqlSession.insert("memberMapper.insertAdrList", adr); } return result; }
+	 */
 	
 	public int idCheck(SqlSessionTemplate sqlSession, String memId) {
 		return sqlSession.selectOne("memberMapper.idCheck", memId);

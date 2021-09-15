@@ -91,7 +91,7 @@
 		<div class="join_row">
 			<h3 class="join_title"><label for="pwd1">비밀번호</label></h3>
 			<div class="ps_box">
-				<input type="password" name=memPwd"" id="memPwd">
+				<input type="password" name="memPwd" id="memPwd">
 			</div>
 		</div>
     	<label for="memId">* ID : 숫자 1개 이상 포함해 총 8~13자 입력</label>
@@ -160,7 +160,7 @@ $(document).on("change", "#memId", function(){
 	}
 })
 
-$(document).on("click", "button[name=check]", function(){
+$(document).on("click", "a[name=check]", function(){
 	$.ajax({
 		url:"idCheck.me",
 		data:{checkId: $("#memId").val()},

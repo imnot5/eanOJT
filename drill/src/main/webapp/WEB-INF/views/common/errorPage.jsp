@@ -8,7 +8,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<jsp:include page="header.jsp">
+	<jsp:include page="header.jsp"/>
 	<h1>${ errorMsg }</h1>
 </body>
 </html>

@@ -35,9 +35,14 @@ public class MemberServiceImpl implements MemberService{
 	}
 	
 	@Override
-	public int insertAddressList(ArrayList<Address> adrList) {
-		return mDao.insertAddressList(sqlSession, adrList);
+	public int insertNewAddress(Address adr) {
+		return mDao.insertNewAdress(sqlSession, adr);
 	}
+	
+	/*
+	 * @Override public int insertAddressList(ArrayList<Address> adrList) { return
+	 * mDao.insertAddressList(sqlSession, adrList); }
+	 */
 	
 	@Override
 	public int insertMember(Member m, Address adr) {

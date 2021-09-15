@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="noticeMapper">
+  <resultMap type="Notice" id="noticeResultSet">
+  	<result property="grpCd" column="GRP_CD"/>
+  	<result property="detailCd" column="DETAIL_CD"/>
+  	<result property="detailNm" column="DETAIL_NM"/>
+  	<result property="noticeNo" column="NOTICE_NO"/>
+  	<result property="noticeWriter" column="NOTICE_WRITER"/>
+  	<result property="noticeTitle" column="NOTICE_TITLE"/>
+  	<result property="noticeContent" column="NOTICE_CONTENT"/>
+  	<result property="noticeCount" column="NOTICE_COUNT"/>
+  	<result property="noticeStatus" column="NOTICE_STATUS"/>
+  	<result property="createDate" column="CREATE_DATE"/>
+  	<result property="modifyDate" column="MODIFY_DATE"/>
+  </resultMap>
+  
+  <select id="selectList" parameterType="Notice" resultMap="noticeResultSet">
+	select
+		  d.grp_cd
+		, detail_nm
+		, notice_no
+		, notice_writer
+		, notice_title
+		, notice_content
+		, notice_count
+		, notice_status
+		, to_char(n.create_date, 'YYYY-MM-DD') as create_date
+		, n.modify_date
+	 from test_notice n
+	 join test_detail d using(detail_cd)
+	where notice_status = 'Y'
+	order
+	   by notice_no desc
+	</select>
+
+	<select id="selectCount" resultType="_int">
+	select 
+		   count(*)
+	  from test_notice
+	 where notice_status = 'Y'
+	</select>
+	
+	<insert id="insertNotice">
+	 insert
+	   into test_notice
+	 (
+	 		grp_cd
+	 	  , detail_cd
+	 	  , notice_no
+	 	  , notice_writer
+	 	  , notice_title
+	 	  , notice_content
+	 	  , notice_status
+	 	  , create_date
+	 )
+	 values
+	 (
+	 		'NOTI_STS'
+	 	  , #{detailCd}
+	 	  , seq_nno.nextval
+	 	  , #{noticeWriter}
+	 	  , #{noticeTitle}
+	 	  , #{noticeContent}
+	 	  , 'Y'
+	 	  , default
+	 )
+	</insert>
+	
+	<update id="increaseCount" parameterType="_int">
+	update
+		  test_notice
+	  set notice_count = notice_count +1
+	where notice_no = #{noticeNo}
+	  and notice_status = 'Y'
+	</update>
+	
+	<select id="selectNotice" parameterType="Notice" resultMap="noticeResultSet">
+	select
+		  d.grp_cd
+		, detail_nm
+		, notice_no
+		, notice_writer
+		, notice_title
+		, notice_content
+		, notice_count
+		, notice_status
+		, to_char(n.create_date, 'YYYY-MM-DD') as create_date
+		, n.modify_date
+	 from test_notice n
+	 join test_detail d using(detail_cd)
+	where notice_status = 'Y'
+	  and notice_no = #{noticeNo}
+	</select>
+</mapper>
+
+

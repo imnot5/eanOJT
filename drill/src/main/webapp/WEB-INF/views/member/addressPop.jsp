@@ -43,7 +43,7 @@
         <table border="1">
         <tr>
         <th>배송지명</th>
-        <td><input type="text" name="">집</td>
+        <td><input type="text" value="${ adr.aka }"></td>
         </tr>
         
         <tr>
@@ -74,6 +74,12 @@ $(function(){
     $("#sample6_address").val(addressArr[0]);
     $("#sample6_detailAddress").val(addressArr[1]);
     
+    var status= "${adr.status}";
+    console.log(status);
+    if(status == 'Y'){
+    	 $("input:checkbox").prop("checked", true);
+    }
+   
 })
 
 function sample6_execDaumPostcode() {

@@ -15,7 +15,8 @@ public interface MemberService {
 	Address selectEachAddress(int addressNo);
 	
 	//주소저장
-	int insertAddressList(ArrayList<Address> adrList);
+	int insertNewAddress(Address adr);
+	/* int insertAddressList(ArrayList<Address> adrList); */
 	
 	//주소수정
 	int updateAdrMember(Address adr);

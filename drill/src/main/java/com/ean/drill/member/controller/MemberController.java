@@ -3,14 +3,17 @@ package com.ean.drill.member.controller;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -95,13 +98,12 @@ public class MemberController {
 	@RequestMapping("myPage.me")
 	public ModelAndView myPage(Address adr, HttpSession session, ModelAndView mv, HttpServletRequest request) {
 
-		String memId = ((Member)request.getSession().getAttribute("loginUser")).getMemId();		
-		ArrayList<Address> adrList = mService.selectAddress(memId);
-		
 		if(session.getAttribute("loginUser") == null) {
 			session.setAttribute("alertMsg", "로그인이 필요한 서비스입니다"); 
 			mv.setViewName("redirect:/"); 
 		} else { 
+			String memId = ((Member)request.getSession().getAttribute("loginUser")).getMemId();		
+			ArrayList<Address> adrList = mService.selectAddress(memId);
 			mv.addObject("adrList",adrList);
 			mv.setViewName("member/myPage");
 		}
@@ -109,23 +111,59 @@ public class MemberController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value="adrPage.me", produces="text/plain;charset=UTF-8")
-	public String adrPage(@RequestBody String mem) {
-		String memId = mem;
-		ArrayList<Address> adrList = mService.selectAddress(memId);
-		System.out.println(adrList);
-		return new Gson().toJson(adrList);
+	@RequestMapping("xxx.me")
+	public String adrPage(@RequestBody String memId, HttpServletResponse response) {
+		String mem = memId;
+		System.out.println("memId"+mem);
+		ArrayList<Address> list = mService.selectAddress(mem);
+		System.out.println(list);
+		
+		String json = new Gson().toJson(list);
+		
+		response.setContentType("text/html;charset=UTF-8");
+		
+		return json;
 	}
 	
 	@RequestMapping("addressPop.me")
 	public String addressPop(int adrNo, Address adr, HttpSession session, Model model, HttpServletRequest request) {
-		String memId = ((Member)request.getSession().getAttribute("loginUser")).getMemId();
 		int addressNo = adrNo;
 		adr = mService.selectEachAddress(addressNo);
 		model.addAttribute("adr",adr);
 		return "member/addressPop";
 	}
 	
+	@RequestMapping("adrNewForm.me")
+	public String adrNewForm() {
+		return "member/addressNewForm";
+	}
+	
+	@RequestMapping("newAddress.me")
+	public String insertNewAddress(Address adr, Model model, HttpServletRequest request, HttpSession session) {
+		String memId = ((Member)session.getAttribute("loginUser")).getMemId();
+		adr.setMemId(memId);
+		
+		String[] addressArr = request.getParameterValues("address");
+		String address = "";
+		if(addressArr != null) {
+			address = String.join(",", addressArr);
+		}
+		adr.setAddress(address);
+		
+		if(adr.getStatus() == null) {
+			adr.setStatus("N");
+		}
+		
+		int result = mService.insertNewAddress(adr);
+		if(result > 0) {
+			session.setAttribute("alertMsg", "주소추가성공");
+			model.addAttribute("adr", adr);
+			return "member/myPage";
+		} else {
+			model.addAttribute("errorMsg", "주소변경실패");
+			return "common/errorPage";
+		}
+	}
 	@RequestMapping("updatePwd.me")
 	public String updatePwdMember(Member m, String memPwd, String newPwd, HttpSession session, Model model) {
 		//기존 패스워드 암호화된것

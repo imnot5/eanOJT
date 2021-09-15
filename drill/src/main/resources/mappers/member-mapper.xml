@@ -17,7 +17,8 @@
   
   <resultMap type="Address" id="addressResultSet">
 	<result property="addressNo" column="address_No"/>
-	<result property="memId" column="mem_Id"/>
+	<result property="memId" column="mem_id"/>
+	<result property="aka" column="aka"/>
 	<result property="address" column="address"/>
 	<result property="zipCode" column="zipCode"/>
 	<result property="status" column="status"/>
@@ -45,11 +46,12 @@
   	select
   	  	   address_no
   	  	 , mem_id
+  	  	 , aka
   	  	 , address
   	  	 , zipcode
   	  	 , status
   	  	 , createDate
-  	 from test_address
+  	 from  test_address
   	where  mem_id = #{memId}
   </select>
   
@@ -57,6 +59,7 @@
   	select
   	  	   address_no
   	  	 , mem_id
+  	  	 , aka
   	  	 , address
   	  	 , zipcode
   	  	 , status
@@ -99,6 +102,7 @@
   	  (
   	  	   address_no
   	  	 , mem_id
+  	  	 , aka
   	  	 , address
   	  	 , zipcode
   	  	 , status
@@ -108,9 +112,34 @@
   	(
   		   seq_adr.nextval
   		 , #{memId}
+  		 , #{aka}
   		 , #{address}
   		 , #{zipCode}
   		 , default
+  		 , default
+  	)
+  </insert>
+  
+  <insert id="insertNewAddress" parameterType="Address">
+  	insert
+  	  into test_address
+  	  (
+  	  	   address_no
+  	  	 , mem_id
+  	  	 , aka
+  	  	 , address
+  	  	 , zipcode
+  	  	 , status
+  	  	 , createDate
+  	  )
+  	values
+  	(
+  		   seq_adr.nextval
+  		 , #{memId}
+  		 , #{aka}
+  		 , #{address}
+  		 , #{zipCode}
+  		 , #{status}
   		 , default
   	)
   </insert>
@@ -136,6 +165,7 @@
   		 , default
   	)
   </insert>
+  
   <select id="idCheck" resultType="_int">
   	select
   		  count(*)
