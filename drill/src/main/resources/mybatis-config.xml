@@ -9,6 +9,7 @@
 		<typeAlias type="com.ean.drill.member.model.vo.Address" alias="Address"/>
 		<typeAlias type="com.ean.drill.board.model.vo.Board" alias="Board"/>
 		<typeAlias type="com.ean.drill.notice.model.vo.Notice" alias="Notice"/>
+		<typeAlias type="com.ean.drill.common.model.vo.Attachment" alias="Attachment"/>
 	</typeAliases>
 	<mappers>
 		<mapper resource="/mappers/member-mapper.xml"/>

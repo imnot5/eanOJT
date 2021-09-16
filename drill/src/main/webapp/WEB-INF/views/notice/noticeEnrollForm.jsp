@@ -12,8 +12,7 @@
 
 <div class="container">
 <h2>공지사항 작성하기</h2>
-	<form id="noticeForm">
-	
+	<form id="noticeForm" method="POST" enctype="multipart/form-data">
 		<div class="insert_row">
 			<h3 class="insert_title"><label for="category">카테고리</label></h3>
 			<select name="detailCd">
@@ -23,6 +22,10 @@
 			</select>
 		</div>
 		
+		<div class="insert_row">
+			<h3 class="insert_title"><label for="attchment">첨부파일</label></h3>
+			<input multiple="multiple" type="file" name="upfile"/>
+		</div>
 		<div class="insert_row">
 			<h3 class="insert_title"><label for="title">제목</label></h3>
 			<input type="text" name="noticeTitle" placeholder="제목입력">
@@ -46,7 +49,11 @@
 
 <script>
 
-function insertNotice(){
+	function insertNotice(){
+		$("#noticeForm").attr("action", "insert.no").submit();
+	}
+	
+/* function insertNotice(){
 	var form = new FormData(document.getElementById('noticeForm'));
 	$.ajax({
 		url:"insert.no",
@@ -57,12 +64,18 @@ function insertNotice(){
 		cache:false,
 		data: form,
 		success:function(result){
-			console.log("ajax성공")
+			var status = result.code
+			if(status="success"){
+				console.log("ajax성공")
+				window.location.href="listView.no";
+			}
+
 		}, error: function(){
 			console.log("ajax실패")
+			window.location.href="errorPage.jsp";
 		}
 	})
-}
+} */
 </script>
 </body>
 </html>

@@ -23,7 +23,6 @@
 	<c:if test="${ !empty alertMsg }">
 		<script>
 			window.alert("${alertMsg}");
-			window.open("about:blank","_self").close();</script>
 		</script>
 		<c:remove var="alertMsg" scope="session"/>
 	</c:if>

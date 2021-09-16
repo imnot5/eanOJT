@@ -15,6 +15,18 @@
   	<result property="modifyDate" column="MODIFY_DATE"/>
   </resultMap>
   
+  <resultMap type="Attachment" id="attResultSet">
+  	<result property="grpCd" column="GRP_CD"/>
+  	<result property="detailCd" column="DETAIL_CD"/>
+  	<result property="attachmentNo" column="ATTACHMENT_NO"/>
+  	<result property="refPno" column="REF_PNO"/>
+  	<result property="originName" column="ORIGIN_NAME"/>
+  	<result property="changeName" column="CHANGE_NAME"/>
+  	<result property="status" column="STATUS"/>
+  	<result property="createDate" column="CREATEDATE"/>
+  	<result property="modifyDate" column="MODIFYDATE"/>
+  </resultMap>
+  
   <select id="selectList" parameterType="Notice" resultMap="noticeResultSet">
 	select
 		  d.grp_cd
@@ -67,6 +79,31 @@
 	 )
 	</insert>
 	
+	<insert id="insertNoticeAtt" parameterType="Attachment">
+	insert
+	   into test_attachment
+	 (
+	 		grp_cd
+	 	  , detail_cd
+	 	  , attachment_no
+	 	  , ref_pno
+	 	  , origin_name
+	 	  , change_name
+	 	  , status
+	 	  , createdate
+	 )
+	 values
+	 (
+	 		'BRD_STS'
+	 	  , '4'
+	 	  , seq_ano.nextval
+	 	  , seq_nno.currval
+	 	  , #{originName}
+	 	  , #{changeName}
+	 	  , 'Y'
+	 	  , default
+	 )
+	</insert>
 	<update id="increaseCount" parameterType="_int">
 	update
 		  test_notice
@@ -79,6 +116,7 @@
 	select
 		  d.grp_cd
 		, detail_nm
+		, detail_cd
 		, notice_no
 		, notice_writer
 		, notice_title
@@ -92,6 +130,59 @@
 	where notice_status = 'Y'
 	  and notice_no = #{noticeNo}
 	</select>
+	
+	<select id="selectNoticeAtt" parameterType="Attachment" resultMap="attResultSet">
+	 select
+	 	   a.grp_cd
+	 	 , d.detail_nm
+		 , a.detail_cd
+	 	 , attachment_no
+	 	 , ref_pno
+	 	 , origin_name
+	 	 , change_name
+	 	 , a.status
+	 	 , createdate
+	 	 , modifydate
+	 from test_attachment a
+	 join test_detail d on(a.detail_cd = d.detail_cd)
+	where ref_pno = #{refPno}
+	  and a.detail_cd = '4'
+	</select>
+	
+	<update id="updateNotice">
+	 update
+	 	    test_notice
+	    set detail_cd = #{detailCd}
+	      , notice_title = #{noticeTitle}
+	      , notice_content = #{noticeContent}
+	      , modify_date = sysdate
+	  where notice_no = #{noticeNo}
+	</update>
+	
+	<update id="updateNoticeAtt">
+	 update
+	 	    test_attachment
+	    set origin_name = #{originName}
+	      , change_name = #{changeName}
+	      , modifydate = sysdate
+	  where attachment_no = #{attachmentNo} 
+	</update>
+	
+	
+	<update id="deleteNoticeAtt">
+	 update
+	 	    test_attachment
+	    set status = 'N'
+	      , modifydate = sysdate
+	  where ref_pno = #{noticeNo} 
+	</update>
+	
+	<update id="deleteNotice">
+	 update
+	 	    test_notice
+	 	set notice_status = 'N'
+	  where notice_no = #{noticeNo}
+	</update>
 </mapper>
 
 

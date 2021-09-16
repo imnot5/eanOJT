@@ -39,22 +39,9 @@
 $(function(){
 	selectList();
 	$(".table tbody tr").on("click", function(){
-		console.log("!!")
+		//console.log("!!")
 		var nno = $(this).children().eq(0).text()
-		//location.href="detail.no?nno=" + nno;
-		$.ajax({
-			url:"detailView.no",
-			data:{nno: nno},
-			success:function(result){
-				if(result.code === '0000'){
-					location.href="detail.no?nno="+nno;
-				} else {
-					console.log(result)
-				}
-			}, error:function(){
-				console.log("ajax실패");
-			}
-		}) 
+		location.href="detail.no?nno=" + nno;
 	})
 })
 
@@ -104,7 +91,7 @@ function selectList(){
 			if(currentPage == maxPage){
 				pagination += '<li class="page-item disabled"><a class="page-link">Next</a></li>';
 			} else {
-				patination += '<li class="page-item"><a class="page-link" href="list.no?currentPage='+ currentPage+1 +'"> Next </a></li>';
+				pagination += '<li class="page-item"><a class="page-link" href="list.no?currentPage='+ currentPage+1 +'"> Next </a></li>';
 			}
 			$("table tbody").html(list);
 			$("#pagination ul").html(pagination);
