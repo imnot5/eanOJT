@@ -25,6 +25,7 @@
   	<result property="status" column="STATUS"/>
   	<result property="createDate" column="CREATEDATE"/>
   	<result property="modifyDate" column="MODIFYDATE"/>
+  	<result property="imgLevel" column="IMG_LEVEL"/>
   </resultMap>
   
   <select id="selectList" parameterType="Notice" resultMap="noticeResultSet">
@@ -104,6 +105,33 @@
 	 	  , default
 	 )
 	</insert>
+	
+	<insert id="addNoticeAtt" parameterType="Attachment">
+	insert
+	   into test_attachment
+	 (
+	 		grp_cd
+	 	  , detail_cd
+	 	  , attachment_no
+	 	  , ref_pno
+	 	  , origin_name
+	 	  , change_name
+	 	  , status
+	 	  , createdate
+	 )
+	 values
+	 (
+	 		'BRD_STS'
+	 	  , '4'
+	 	  , seq_ano.nextval
+	 	  , #{refPno}
+	 	  , #{originName}
+	 	  , #{changeName}
+	 	  , 'Y'
+	 	  , default
+	 )
+	</insert>
+	
 	<update id="increaseCount" parameterType="_int">
 	update
 		  test_notice
@@ -147,6 +175,7 @@
 	 join test_detail d on(a.detail_cd = d.detail_cd)
 	where ref_pno = #{refPno}
 	  and a.detail_cd = '4'
+	  and a.status = 'Y'
 	</select>
 	
 	<update id="updateNotice">
@@ -174,7 +203,7 @@
 	 	    test_attachment
 	    set status = 'N'
 	      , modifydate = sysdate
-	  where ref_pno = #{noticeNo} 
+	  where attachment_no = #{attachmentNo} 
 	</update>
 	
 	<update id="deleteNotice">

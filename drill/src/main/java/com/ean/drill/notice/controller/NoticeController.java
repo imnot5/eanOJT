@@ -47,7 +47,7 @@ public class NoticeController {
 		int listCount = nService.selectCount();
 		PageInfo pi = Pagination.getPageInfo(listCount, currentPage, 10, 5);
 		ArrayList<Notice> list = nService.selectNoticeList(pi);
-		System.out.println("noticeList"+list);
+		/* System.out.println("noticeList"+list); */
 		Map<String, Object> result = new HashMap<String, Object>();
 		result.put("list", list);
 		result.put("pi", pi);
@@ -78,24 +78,18 @@ public class NoticeController {
 		return mv;
 	}
 	*/
-	
+	/*
 	@RequestMapping("insert.no")
 	public String insertNotice(Notice n, Attachment att, MultipartFile[] upfile, Model model, HttpSession session) {
 
-		/*
-		 * List<MultipartFile> upfileList = multi.getFiles("upfile");
-		 * System.out.println("upfileList " + upfileList); ArrayList<Attachment> list =
-		 * new ArrayList<>();
-		 */
-		
 		ArrayList<Attachment> list = new ArrayList<>();
 		for(MultipartFile mf : upfile) {
-			System.out.println("upfile" + upfile);
+			System.out.println("upfile[0]" + upfile[0]);
+			System.out.println("upfile[1]" + upfile[1]);
 			if(!mf.isEmpty()) {
 				String changeName = saveFile(mf, session);
 				att.setOriginName(mf.getOriginalFilename());
 				att.setChangeName("resources/uploadFiles/"+changeName);
-				//att.setDetailCd("4");//공지사항코드
 			}
 			list.add(att);
 		}
@@ -111,7 +105,31 @@ public class NoticeController {
 		}
 		
 	}
+*/
+	@RequestMapping("insert.no")
+	public String insertNotice(Notice n, Attachment att, MultipartHttpServletRequest multi, Model model, HttpSession session) {
 
+		List<MultipartFile> fileList = multi.getFiles("upfile");
+		
+		ArrayList<Attachment> list = new ArrayList<>();
+		for(MultipartFile mf : fileList) {
+			att = new Attachment();
+			String changeName = saveFile(mf, session);
+			
+			att.setOriginName(mf.getOriginalFilename());
+			att.setChangeName("resources/uploadFiles/"+changeName);
+			list.add(att);
+		}
+		int result = nService.insertNotice(n, list);
+		
+		if(result>0) {
+			session.setAttribute("alertMsg", "공지사항작성성공");
+			return "redirect:/listView.no";
+		} else {
+			model.addAttribute("errorMsg", "공지사항작성실패");
+			return "common/errorPage";
+		}
+	}
 	public String saveFile(MultipartFile upfile, HttpSession session) {
 		String savePath = session.getServletContext().getRealPath("resources/uploadFiles/");
 		String originName = upfile.getOriginalFilename();
@@ -134,6 +152,7 @@ public class NoticeController {
 		int increaseCount = nService.increaseCount(noticeNo);
 		//첨부파일
 		ArrayList<Attachment> list = nService.selectNoticeAtt(noticeNo);
+		System.out.println("attList: " + list);
 		Notice n = nService.selectNotice(noticeNo);
 		if(increaseCount > 0) {
 			mv.addObject("code","0000");
@@ -167,33 +186,79 @@ public class NoticeController {
 	*/
 	
 	@RequestMapping("update.no")
-	public String updateNotice(Attachment att, Notice n, Model model, HttpSession session, MultipartFile[] reUpfile) {
+	public String updateNotice(MultipartHttpServletRequest multi, Attachment att, Notice n, Model model, HttpSession session, HttpServletRequest request, MultipartFile[] reUpfile) {
 		
 		//String[] attNo = request.getParameterValues("attachmentNo");
+		String[] delFiles = request.getParameterValues("delFiles");
+		//개별파일삭제
+		int result2 = 1;
 		
-		ArrayList<Attachment> atList = att.getAtList();
-		ArrayList<Attachment> list = new ArrayList<>();
-		System.out.println("atList: "+atList);
-		for(int i=0; i<reUpfile.length; i++) {
-			if(!reUpfile[i].getOriginalFilename().equals("")) {
-				//기존파일이있을 때
-				if(!atList.isEmpty()) {
-					//기존파일삭제
-					new File(session.getServletContext().getRealPath(atList.get(i).getChangeName())).delete();
-				}
-				//새파일저장
-				String changeName = saveFile(reUpfile[i], session);
-				att.setOriginName(reUpfile[i].getOriginalFilename());
-				att.setChangeName("resources/uploadFiles/"+changeName);
-				att.setAttachmentNo(atList.get(i).getAttachmentNo());
-			} 
-			list.add(att);
+		if(delFiles != null) {
+			for(String str : delFiles) {
+				String[] arr;
+				arr = str.split(",");
+				System.out.println("arr[0] " + arr[0]);
+				String no = arr[0];
+				String cname = arr[1];
+				//루트에서파일삭제
+				new File(session.getServletContext().getRealPath(cname)).delete();
+				//db에서삭제
+				int noticeNo = Integer.parseInt(no);
+				result2 = nService.deleteNoticeAtt(noticeNo);
+			}
+		}
+		
+		ArrayList<Attachment> list =new ArrayList<>();
+		//새로 추가 파일이 있을경우
+		int result3 = 1;
+		if(!multi.getFile("upfile").getOriginalFilename().equals("")) {
+			List<MultipartFile> fileList = multi.getFiles("upfile");
+			for(MultipartFile mf: fileList) {
+				att = new Attachment();
+				String changeName = saveFile(mf, session);
+				att.setOriginName(mf.getOriginalFilename());
+				att.setChangeName("resources/uploadFiles/" + changeName);
+				att.setRefPno(n.getNoticeNo());
+				list.add(att);
+			}
+			result3 = nService.addNoticeAtt(list);
 		}
 
-		String memId =((Member)session.getAttribute("loginUser")).getMemId();
-		n.setNoticeWriter(memId);
-		int result = nService.updateNotice(n, list);
-		if(result > 0) {
+		int result1 = 1;
+		
+		if(reUpfile!=null) {
+			for(int i=0; i<reUpfile.length; i++) {
+				System.out.println("reUpfile"+reUpfile[i].getOriginalFilename());
+				list = new ArrayList<>();
+				//뭔가 추가를 했어!
+				if(!reUpfile[i].getOriginalFilename().equals("")) {
+					ArrayList<Attachment> atList = att.getAtList();
+					System.out.println("atList처음:" + atList);
+					//기존파일이있을 때
+					if(atList!=null) {
+						//기존파일삭제
+						System.out.println(atList.get(i).getAttachmentNo());
+						new File(session.getServletContext().getRealPath(atList.get(i).getChangeName())).delete();
+					}
+					//새파일저장
+					String changeName = saveFile(reUpfile[i], session);
+					att.setOriginName(reUpfile[i].getOriginalFilename());
+					att.setChangeName("resources/uploadFiles/"+changeName);
+					att.setAttachmentNo(atList.get(i).getAttachmentNo());
+					list.add(att);
+				}
+			}
+			String memId =((Member)session.getAttribute("loginUser")).getMemId();
+			n.setNoticeWriter(memId);
+			System.out.println("컨트롤러list" + list);
+			result1 = nService.updateNotice(n, list);
+		}
+
+		System.out.println("돌고 난 뒤list "+list);
+		System.out.println("result1 " + result1);//내용+파일
+		System.out.println("result2 " + result2);//파일 삭제
+		System.out.println("result3 " + result3);//파일 추가
+		if(result1 * result2 * result3> 0) {
 			model.addAttribute("n", n);
 			return "redirect:/detail.no?nno=" + n.getNoticeNo();
 		} else {

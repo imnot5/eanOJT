@@ -57,12 +57,19 @@ public class NoticeServiceImpl implements NoticeService{
 	}
 	
 	@Override
+	public int addNoticeAtt(ArrayList<Attachment> list) {
+		//원래는 insertNoticeAtt를 재활용하고 싶었지만 seq_nno.currval을 찾지 못해 새로 만듦
+		return nDao.addNoticeAtt(sqlSession, list);
+	}
+	@Override
 	public int updateNotice(Notice n, ArrayList<Attachment> list) {
 		int result1 = nDao.updateNotice(sqlSession, n);
 		int result2 = 1;
 		if(!list.isEmpty()) {
 			result2 = nDao.updateNoticeAtt(sqlSession, list);
 		}
+		System.out.println("서비스 result1" + result1);
+		System.out.println("서비스 result2" + result2);
 		return result1 * result2;
 	}
 
@@ -71,11 +78,16 @@ public class NoticeServiceImpl implements NoticeService{
 		int result1 = nDao.deleteNotice(sqlSession, noticeNo);
 		int result2 = 1;
 		if(!atList.isEmpty()) {
-			result2 = nDao.deleteNoticeAtt(sqlSession, noticeNo);
+			for(Attachment att : atList) {
+				result2 = nDao.deleteNoticeAtt(sqlSession, att.getAttachmentNo());
+			}
 		}
-		
 		return result1 * result2;
-		
+	}
+	
+	@Override
+	public int deleteNoticeAtt(int noticeNo) {
+		return nDao.deleteNoticeAtt(sqlSession, noticeNo);
 	}
 
 }

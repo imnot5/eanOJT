@@ -23,5 +23,6 @@ public class Attachment {
 	private String status;
 	private Date createDate;
 	private Date modifyDate;
+	private int imgLevel;
 	private ArrayList<Attachment> atList;
 }

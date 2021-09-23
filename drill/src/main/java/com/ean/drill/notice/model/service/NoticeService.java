@@ -14,6 +14,7 @@ public interface NoticeService {
 	
 	//공지사항 작성
 	int insertNotice(Notice n, ArrayList<Attachment> att);
+	int addNoticeAtt(ArrayList<Attachment> list);
 	
 	//공지사항 상세 조회
 	int increaseCount(int noticeNo);
@@ -25,4 +26,6 @@ public interface NoticeService {
 	
 	//공지사항 삭제
 	int deleteNotice(int noticeNo, ArrayList<Attachment> atList);
+	//공지사항 첨부파일개별삭제
+	int deleteNoticeAtt(int noticeNo);
 }

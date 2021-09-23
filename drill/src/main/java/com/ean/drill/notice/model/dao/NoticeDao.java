@@ -36,7 +36,13 @@ public class NoticeDao {
 		System.out.println("dao" + result);
 		return result;
 	}
-	
+	public int addNoticeAtt(SqlSessionTemplate sqlSession, ArrayList<Attachment> list) {
+		int result = 0;
+		for(Attachment att : list) {
+			result = sqlSession.insert("noticeMapper.addNoticeAtt", att);
+		}
+		return result;
+	}
 	public int increaseCount(SqlSessionTemplate sqlSession, int noticeNo) {
 		return sqlSession.update("noticeMapper.increaseCount", noticeNo);
 	}

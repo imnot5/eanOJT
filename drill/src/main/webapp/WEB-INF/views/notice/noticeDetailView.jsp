@@ -9,7 +9,7 @@
 <title>Insert title here</title>
 <style>
 	.hide{
-		color:red;
+		display:none;
 	}
 </style>
 </head>
@@ -46,25 +46,33 @@
 		<div class="insert_row">
 			<h3 class="insert_title"><label for="attchment">첨부파일</label></h3>
 			<div class="atts">
-			<c:forEach var="i" items="${ list }" varStatus="status">
-				<c:choose>
-					<c:when test="${ !empty i.originName }">
+
+			<c:choose>
+					<c:when test="${!empty list}">
+					<c:forEach var="i" items="${ list }" varStatus="status">
 					<ul>
 						<li id="attList">
 						<a href="${ i.changeName }" download="${i.changeName }">${ i.originName }</a>
 						<a type="button" name="attUpdate" class="btn btn-primary btn-sm">수정하기</a>
-						<input type="file" class="refile" name="reUpfile">
+						<input type="file" class="reUpfile" name="reUpfile">
 						<input type="hidden" name="atList[${status.index }].attachmentNo" value="${ i.attachmentNo }">
 						<input type="hidden" name="atList[${status.index }].changeName" value="${i.changeName }">
+						<input type="hidden" name="del" value="${i.attachmentNo },${i.changeName}">
 						<a type="button" name="attDelete" class="btn btn-danger btn-sm">삭제하기</a>
 						</li>
 					</ul>
+					</c:forEach>
+					<ul>
+						<li><input type="file" name="upfile"></li>
+					</ul>
 					</c:when>
 					<c:otherwise>
-						첨부파일이 없습니다
+					<ul>
+						<li>첨부파일이 없습니다</li>
+						<li><input type="file" class="nreUpfile" name="upfile"></li>
+					</ul>
 					</c:otherwise>
-				</c:choose>
-			</c:forEach>
+			</c:choose>
 			</div>
 		</div>
 		<div class="btnBox">
@@ -76,7 +84,7 @@
 
 <script>
 $(function(){
-	$(".refile").hide();
+	$(".reUpfile").hide();
 	
 	$("select[name=detailCd] option").each(function(){
 		if($(this).val() == '${n.detailCd}'){
@@ -88,9 +96,16 @@ $(function(){
 	})
 	
 	$("a[name=attDelete]").on("click", function(){
-			$(this).parent().remove();
+			/* $(this).parent().remove(); */
+			console.log($(this).siblings('input[type="hidden"]'));
+			$(this).prev('input[type="hidden"]').attr('name', 'delFiles');
+			$(this).parent().addClass("hide");
+			
 	})
 
+/* 	$("input[name=upfile]").on("click", function(){
+		$(".reUpfile").attr('name', 'nrUpfile');
+	}) */
 
 })
 
