@@ -120,3 +120,7 @@ buildNumber.properties
 # 인텔리제이 관련
 .idea/
 *.iml
+
+# exel관련
+*.xlsx
+*.xls
