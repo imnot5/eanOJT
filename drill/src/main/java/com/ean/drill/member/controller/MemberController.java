@@ -7,14 +7,22 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.ean.drill.member.model.service.MemberService;
@@ -44,6 +52,7 @@ public class MemberController {
 			return "common/errorPage";
 		}
 	}
+	
 	@RequestMapping("logout.me")
 	public String logoutMember(HttpSession session) {
 		session.invalidate();
@@ -200,5 +209,34 @@ public class MemberController {
 			model.addAttribute("errorMsg", "주소변경실패");
 			return "common/errorPage";
 		}
+	}
+	
+	@GetMapping(value="auth/kakao/callback")
+	public String home(@RequestParam("code")String code) {
+		System.out.println(code);
+		
+		RestTemplate rt = new RestTemplate();
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+		
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add("grant_type", "authorization_code");
+		params.add("client_id", "59ea53f98098c442f2b7872c6b3b016f");
+		params.add("redirect_uri", "https://localhost:8888/auth/kakao/callback");
+		params.add("code", code);
+
+	HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest = new HttpEntity<>(params,headers);
+	
+	ResponseEntity<String> response = rt.exchange(
+			"https://kauth.kakao.com/oauth/token",
+			HttpMethod.POST,
+			kakaoTokenRequest,
+			String.class
+			);
+	
+	System.out.println(response);
+	
+	return "redirect:/";
 	}
 }

@@ -12,6 +12,14 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
 
+<!-- kakao sdk  -->
+<script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+<!-- kakao sdk 초기화 -->
+<script>
+	Kakao.init('f2e27dda5cfdc6659ff812c6b423f97a');
+	Kakao.isInitialized();
+	console.log(Kakao.isInitialized());
+</script>
 <style>
 #navbarNavDropdown{
 	display:flex;
@@ -99,6 +107,10 @@
             <form action="login.me" method="post">
                 <!-- Modal Body -->
                 <div class="modal-body">
+                	<a href="javascript:loginWithKakao()">
+                		  <img src="//k.kakaocdn.net/14/dn/btqCn0WEmI3/nijroPfbpCa4at5EIsjyf0/o.jpg" width="222"/>
+                	</a>
+                	<!-- <button onclick="kakaoUnlink();">탈퇴하기</button> -->
                     <label for="memId" class="mr-sm-2">ID :</label>
                     <input type="text" class="form-control mb-2 mr-sm-2" placeholder="Enter ID" id="memId" name="memId"> <br>
                     <label for="memPwd" class="mr-sm-2">Password:</label>
@@ -162,6 +174,33 @@
         console.log(cookieName);
         return unescape(cookieValue);
 	}
+	
+    function loginWithKakao() {
+    	
+    	//location.href="/oauth/authorize?client_id=59ea53f98098c442f2b7872c6b3b016f&redirect_uri=https://localhost:8888/auth/kakao/callback&response_type=code";
+    	  Kakao.Auth.authorize({
+    		redirectUri:'https://localhost:8888/auth/kakao/callback'
+    	}) 
+    	
+/*     	$.ajax({
+    		url:'getKakaoAuthUrl',
+    		type:'get',
+    	}).done(function(res){
+    		location.href = res;
+    	})  */
+      }
+    
+    function kakaoUnlink(){
+        Kakao.API.request({
+        	  url: '/v1/user/unlink',
+        	  success: function(response) {
+        	    console.log(response);
+        	  },
+        	  fail: function(error) {
+        	    console.log(error);
+        	  },
+        	});
+    }
 </script>
 </body>
 </html>
