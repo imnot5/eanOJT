@@ -211,32 +211,4 @@ public class MemberController {
 		}
 	}
 	
-	@GetMapping(value="auth/kakao/callback")
-	public String home(@RequestParam("code")String code) {
-		System.out.println(code);
-		
-		RestTemplate rt = new RestTemplate();
-		
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
-		
-		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add("grant_type", "authorization_code");
-		params.add("client_id", "59ea53f98098c442f2b7872c6b3b016f");
-		params.add("redirect_uri", "https://localhost:8888/auth/kakao/callback");
-		params.add("code", code);
-
-	HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest = new HttpEntity<>(params,headers);
-	
-	ResponseEntity<String> response = rt.exchange(
-			"https://kauth.kakao.com/oauth/token",
-			HttpMethod.POST,
-			kakaoTokenRequest,
-			String.class
-			);
-	
-	System.out.println(response);
-	
-	return "redirect:/";
-	}
 }

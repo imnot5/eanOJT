@@ -107,9 +107,10 @@
             <form action="login.me" method="post">
                 <!-- Modal Body -->
                 <div class="modal-body">
-                	<a href="javascript:loginWithKakao()">
+                	<a href="https://kauth.kakao.com/oauth/authorize?client_id=59ea53f98098c442f2b7872c6b3b016f&redirect_uri=http://localhost:8888/drill/login&response_type=code">
                 		  <img src="//k.kakaocdn.net/14/dn/btqCn0WEmI3/nijroPfbpCa4at5EIsjyf0/o.jpg" width="222"/>
                 	</a>
+                	<button type="button" class="btn" id="controlTest">컨트롤러가는가</button>	
                 	<!-- <button onclick="kakaoUnlink();">탈퇴하기</button> -->
                     <label for="memId" class="mr-sm-2">ID :</label>
                     <input type="text" class="form-control mb-2 mr-sm-2" placeholder="Enter ID" id="memId" name="memId"> <br>
@@ -128,7 +129,8 @@
             </div>
         </div>
     </div>
-    
+
+ 
 <script>
 	$(document).ready(function(){
         var userId = getCookie("cookieUserId"); 
@@ -146,6 +148,10 @@
                 deleteCookie("cookieUserId");
             }
         }); 
+	})
+	
+	$("#controlTest").click(function(){
+		$("form").attr("action","login").submit();
 	})
 	
 	function setCookie(cookieName, value, exdays){
@@ -175,19 +181,20 @@
         return unescape(cookieValue);
 	}
 	
+	
     function loginWithKakao() {
     	
-    	//location.href="/oauth/authorize?client_id=59ea53f98098c442f2b7872c6b3b016f&redirect_uri=https://localhost:8888/auth/kakao/callback&response_type=code";
-    	  Kakao.Auth.authorize({
-    		redirectUri:'https://localhost:8888/auth/kakao/callback'
-    	}) 
+    	//location.href="https://kauth.kakao.com/oauth/authorize?client_id=59ea53f98098c442f2b7872c6b3b016f&redirect_uri=http://localhost:8888/auth/kakao/callback&response_type=code";
+     	  Kakao.Auth.authorize({
+    		redirectUri:'http://localhost:8888/login'
+    	}) ;
     	
 /*     	$.ajax({
-    		url:'getKakaoAuthUrl',
+    		url:'/login/getKakaoAuthUrl',
     		type:'get',
     	}).done(function(res){
     		location.href = res;
-    	})  */
+    	})  */ 
       }
     
     function kakaoUnlink(){
