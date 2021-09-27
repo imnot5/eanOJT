@@ -6,12 +6,17 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.ean.drill.member.model.vo.Address;
+import com.ean.drill.member.model.vo.KakaoProfile;
 import com.ean.drill.member.model.vo.Member;
 
 @Repository
 public class MemberDao {
 	public Member loginMember(SqlSessionTemplate sqlSession, Member m) {
 		return sqlSession.selectOne("memberMapper.loginMember", m);
+	}
+	
+	public Member loginMember(SqlSessionTemplate sqlSession, KakaoProfile profile) {
+		return sqlSession.selectOne("memberMapper");
 	}
 	
 	public ArrayList<Address> selectAddress(SqlSessionTemplate sqlSession, String memId) {
@@ -25,6 +30,11 @@ public class MemberDao {
 	public int insertMember(SqlSessionTemplate sqlSession, Member m) {
 		return sqlSession.insert("memberMapper.insertMember", m);
 	}
+	
+	public int saveMember(SqlSessionTemplate sqlSession, KakaoProfile profile) {
+		return sqlSession.insert("memberMapper.insertMember2", profile);
+	}
+	
 	public int insertAddress(SqlSessionTemplate sqlSession, Address adr) {
 		return sqlSession.insert("memberMapper.insertAddress", adr);
 	}

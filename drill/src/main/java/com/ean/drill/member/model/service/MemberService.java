@@ -3,12 +3,14 @@ package com.ean.drill.member.model.service;
 import java.util.ArrayList;
 
 import com.ean.drill.member.model.vo.Address;
+import com.ean.drill.member.model.vo.KakaoProfile;
 import com.ean.drill.member.model.vo.Member;
 
 public interface MemberService {
 	
 	//login
 	Member loginMember(Member m);
+	Member loginMember(KakaoProfile profile);
 	
 	//주소정보조회
 	ArrayList<Address> selectAddress(String memId);
@@ -23,7 +25,7 @@ public interface MemberService {
 	
 	//회원가입
 	int insertMember(Member m, Address adr);
-	
+	int saveMember(KakaoProfile profile);
 	//회원정보수정
 	int updateMember(Member m);
 	

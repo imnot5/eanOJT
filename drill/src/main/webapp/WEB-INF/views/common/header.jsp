@@ -50,7 +50,7 @@
         <a class="nav-link" href="listView.no">Notice</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Board</a>
+        <a class="nav-link" href="listView.bo">Board</a>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -70,15 +70,26 @@
 			<a class="nav-link" href="enrollForm.me">회원가입</a>
 		</li>
 		<c:choose>
-			<c:when test="${empty loginUser }">
+			<c:when test="${empty loginUser}">
 			<li class="nav-item active">
 				<a class="nav-link" data-toggle="modal" data-target="#loginModal">로그인</a>
 			</li>
 			</c:when>
+			<c:when test="${ !empty loginUser }">
+			<li class="nav-item dropdown">
+		        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		          ${loginUser.memName }님 환영합니다.
+		        </a>
+		        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+		          <a class="dropdown-item" href="myPage.me">마이페이지</a>
+		          <a class="dropdown-item" href="logout.me">로그아웃</a>
+		        </div>
+		      </li>
+			</c:when>
 			<c:otherwise>
 		      <li class="nav-item dropdown">
 		        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-		          ${loginUser.memId }님 환영합니다.
+		          ${loginUserSns.name }님 환영합니다.
 		        </a>
 		        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
 		          <a class="dropdown-item" href="myPage.me">마이페이지</a>
@@ -107,11 +118,12 @@
             <form action="login.me" method="post">
                 <!-- Modal Body -->
                 <div class="modal-body">
-                	<a href="https://kauth.kakao.com/oauth/authorize?client_id=59ea53f98098c442f2b7872c6b3b016f&redirect_uri=http://localhost:8888/drill/login&response_type=code">
+                	<a href="https://kauth.kakao.com/oauth/authorize?client_id=59ea53f98098c442f2b7872c6b3b016f&redirect_uri=http://localhost:8888/login&response_type=code">
                 		  <img src="//k.kakaocdn.net/14/dn/btqCn0WEmI3/nijroPfbpCa4at5EIsjyf0/o.jpg" width="222"/>
-                	</a>
-                	<button type="button" class="btn" id="controlTest">컨트롤러가는가</button>	
-                	<!-- <button onclick="kakaoUnlink();">탈퇴하기</button> -->
+                	</a><br><br>
+                	<a onclick="loginWithNaver();">
+                		<img src="/resources/images/btnG_완성형.png" width="222"/>
+                	</a><br>
                     <label for="memId" class="mr-sm-2">ID :</label>
                     <input type="text" class="form-control mb-2 mr-sm-2" placeholder="Enter ID" id="memId" name="memId"> <br>
                     <label for="memPwd" class="mr-sm-2">Password:</label>
@@ -196,6 +208,25 @@
     		location.href = res;
     	})  */ 
       }
+    
+    function logoutWithKakao(){
+    	$.ajax({
+    		url:"klogout",
+    		type:'get'
+    	}).done(function(result){
+    		location.href = result;
+    	})
+    }
+    
+    function loginWithNaver(){
+    	
+    	$.ajax({
+    		url:"getNaverAuthUrl",
+    		type:"get"
+    	}).done(function(result){
+    		location.href = result;
+    	})
+    }
     
     function kakaoUnlink(){
         Kakao.API.request({

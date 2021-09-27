@@ -124,3 +124,7 @@ buildNumber.properties
 # exel관련
 *.xlsx
 *.xls
+
+#imgs
+*.jpg
+*.jpeg
