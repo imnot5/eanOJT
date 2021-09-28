@@ -50,7 +50,7 @@
         <a class="nav-link" href="listView.no">Notice</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="listView.bo">Board</a>
+        <a class="nav-link" href="list.bo">Board</a>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

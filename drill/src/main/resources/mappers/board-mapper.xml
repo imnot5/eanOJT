@@ -1,5 +1,287 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="boardMapper">
+    <resultMap type="Board" id="boardResultSet">
+  	<result property="grpCd" column="GRP_CD"/>
+  	<result property="detailCd" column="DETAIL_CD"/>
+  	<result property="boardNo" column="BOARD_NO"/>
+  	<result property="boardWriter" column="BOARD_WRITER"/>
+  	<result property="boardTitle" column="BOARD_TITLE"/>
+  	<result property="boardContent" column="BOARD_CONTENT"/>
+  	<result property="boardCount" column="COUNT"/>
+  	<result property="boardStatus" column="STATUS"/>
+  	<result property="createDate" column="CREATEDATE"/>
+  	<result property="modifyDate" column="MODIFYDATE"/>
+  </resultMap>
   
+  <resultMap type="Attachment" id="attResultSet">
+  	<result property="grpCd" column="GRP_CD"/>
+  	<result property="detailCd" column="DETAIL_CD"/>
+  	<result property="attachmentNo" column="ATTACHMENT_NO"/>
+  	<result property="refPno" column="REF_PNO"/>
+  	<result property="originName" column="ORIGIN_NAME"/>
+  	<result property="changeName" column="CHANGE_NAME"/>
+  	<result property="status" column="STATUS"/>
+  	<result property="createDate" column="CREATEDATE"/>
+  	<result property="modifyDate" column="MODIFYDATE"/>
+  	<result property="imgLevel" column="IMG_LEVEL"/>
+  	<association property="board" javaType="Board">
+  	  	<result property="grpCd" column="GRP_CD"/>
+	  	<result property="detailCd" column="DETAIL_CD"/>
+	  	<result property="boardNo" column="BOARD_NO"/>
+	  	<result property="boardWriter" column="BOARD_WRITER"/>
+	  	<result property="boardTitle" column="BOARD_TITLE"/>
+	  	<result property="boardContent" column="BOARD_CONTENT"/>
+	  	<result property="boardCount" column="COUNT"/>
+	  	<result property="boardStatus" column="STATUS"/>
+	  	<result property="createDate" column="CREATEDATE"/>
+	  	<result property="modifyDate" column="MODIFYDATE"/>
+  	</association>
+  </resultMap>
+  
+  <resultMap type="Reply" id="replyResultSet">
+  	<result property="replyNo" column="REPLY_NO"/>
+  	<result property="refBno" column="REF_BNO"/>
+  	<result property="detailCd" column="DETAIL_CD"/>
+  	<result property="replyDepth" column="REPLY_DEPTH"/>
+  	<result property="replyParent" column="REPLY_PARENT"/>
+  	<result property="replyOrder" column="REPLY_ORDER"/>
+  	<result property="replyWriter" column="REPLY_WRITER"/>
+  	<result property="replyContent" column="REPLY_CONTENT"/>
+  	<result property="createDate" column="CREATE_DATE"/>
+  	<result property="modifyDate" column="MODIFY_DATE"/>
+  	<result property="status" column="STATUS"/>
+  </resultMap>
+  
+  <select id="selectListCount" resultType="_int">
+  	select
+  		   count(*)
+  	  from test_board
+  	 where status = 'Y'
+  </select>
+  
+  <select id="selectList" parameterType="Board" resultMap="boardResultSet">
+  	select
+  		   d.grp_cd
+  		 , d.detail_cd
+  		 , board_no
+  		 , board_writer
+  		 , board_title
+  		 , board_content
+  		 , b.count
+  		 , b.status
+  		 , to_char(b.createDate, 'YYYY-MM-DD') as createDate
+  		 , b.modifyDate
+      from test_board b
+      join test_detail d on(d.detail_cd = b.detail_cd)
+      join test_member m on(m.mem_Id = b.board_writer)
+	 where b.status = 'Y'
+	 order
+	    by board_no desc  	
+  </select>
+  
+  <select id="selectBoardAtt" parameterType="Attachment" resultMap="attResultSet">
+	 select
+	 	   a.grp_cd
+	 	 , d.detail_nm
+		 , a.detail_cd
+	 	 , attachment_no
+	 	 , ref_pno
+	 	 , origin_name
+	 	 , change_name
+	 	 , a.status
+	 	 , createdate
+	 	 , modifydate
+	 	 , img_level
+	 from test_attachment a
+	 join test_detail d on(a.detail_cd = d.detail_cd)
+	where ref_pno = #{refPno}
+	  and a.status = 'Y'
+  </select>
+  
+  <select id="selectAll" parameterType="Attachment" resultMap="attResultSet">
+	 select
+	 	   a.grp_cd
+	 	 , d.detail_nm
+		 , a.detail_cd
+	 	 , attachment_no
+	 	 , ref_pno
+	 	 , origin_name
+	 	 , change_name
+	 	 , a.status
+	 	 , a.createdate
+	 	 , a.modifydate
+	 	 , img_level
+	 	 , b.board_no
+  		 , b.board_writer
+  		 , b.board_title
+  		 , b.board_content
+  		 , b.count
+  		 , b.status
+  		 , to_char(b.createDate, 'YYYY-MM-DD') as createDate
+	 from test_attachment a
+	 join test_detail d on(a.detail_cd = d.detail_cd)
+	 join test_board b on (b.board_no = a.ref_pno)
+	where a.status = 'Y'
+	  and a.img_level = 1
+	 order
+	    by b.board_no desc 
+  </select>
+  
+  <insert id="insertBoard" parameterType="Board">
+  	insert
+  	  into test_board
+  	  (
+  	  	   grp_cd
+  	  	 , detail_cd
+  	  	 , board_no
+  	  	 , board_writer
+  	  	 , board_title
+  	  	 , board_content
+  	  	 , status
+  	  	 , createDate
+  	  )
+  	values
+  	(
+  		   'BRD_STS'
+  		  , #{detailCd}
+  		  , seq_bno.nextval
+  		  , #{boardWriter}
+  		  , #{boardTitle}
+  		  , #{boardContent}
+  		  , 'Y'
+  		  , default
+  	)
+  </insert>
+  
+  <insert id="insertTopAtt" parameterType="Attachment">
+  	insert
+  	  into test_attachment
+  	  (
+  	  	 	grp_cd
+	 	  , detail_cd
+	 	  , attachment_no
+	 	  , ref_pno
+	 	  , origin_name
+	 	  , change_name
+	 	  , status
+	 	  , createdate
+	 	  , img_level
+  	  )
+  	values
+  	(
+  		   'BRD_STS'
+  		  , '5'
+  		  , seq_ano.nextval
+  		  , seq_bno.currval
+  		  , #{originName}
+  		  , #{changeName}
+  		  , 'Y'
+  		  , default
+  		  , 1
+  	)
+  </insert>
+  
+    <insert id="insertBelowAtt" parameterType="Attachment">
+  	insert
+  	  into test_attachment
+  	  (
+  	  	 	grp_cd
+	 	  , detail_cd
+	 	  , attachment_no
+	 	  , ref_pno
+	 	  , origin_name
+	 	  , change_name
+	 	  , status
+	 	  , createdate
+	 	  , img_level
+  	  )
+  	values
+  	(
+  		   'BRD_STS'
+  		  , '5'
+  		  , seq_ano.nextval
+  		  , seq_bno.currval
+  		  , #{originName}
+  		  , #{changeName}
+  		  , 'Y'
+  		  , default
+  		  , 2
+  	)
+  </insert>
+  
+  <update id="hitCount">
+  	update
+  		   test_board
+  	   set count = count +1
+  	 where board_no = #{boardNo}
+  </update>
+  
+  <select id="selectThumb" parameterType="Board" resultMap="boardResultSet">
+    select
+  		   d.grp_cd
+  		 , d.detail_cd
+  		 , board_no
+  		 , board_writer
+  		 , board_title
+  		 , board_content
+  		 , b.count
+  		 , b.status
+  		 , to_char(b.createDate, 'YYYY-MM-DD') as createDate
+  		 , b.modifyDate
+      from test_board b
+      join test_detail d on(d.detail_cd = b.detail_cd)
+      join test_member m on(m.mem_Id = b.board_writer)
+	 where board_no = #{boardNo}
+	   and b.status = 'Y'
+  </select>
+  
+  <insert id="insertReply" parameterType="Reply">
+	insert
+	  into test_reply
+	  (
+	  	   reply_no
+	  	 , ref_bno
+	  	 , detail_cd
+	  	 , reply_depth
+	  	 , reply_parent
+	  	 , reply_order
+	  	 , reply_writer
+	  	 , reply_content
+	  	 , create_date
+	  	 , modify_date
+	  	 , status
+	  )
+	values
+	  (
+	  	   seq_rno.nextval
+	  	 , #{refBno}
+	  	 , #{detailCd}
+	  	 , default
+	  	 , null
+	  	 , null
+	  	 , #{replyWriter}
+	  	 , #{replyContent}
+	  	 , default
+	  	 , null
+	  	 , 'Y'
+	  )  
+  </insert>
+  
+  <select id="selectReply" parameterType="Reply" resultMap="replyResultSet">
+  	select
+  		   reply_no
+  		 , ref_bno
+  		 , detail_cd
+  		 , reply_depth
+  		 , reply_parent
+  		 , reply_order
+  		 , reply_writer
+  		 , reply_content
+  		 , to_char(create_date, 'YYYY-MM-DD') as create_date
+  		 , modify_date
+  		 , status
+  	  from test_reply
+  	 where ref_bno = #{refBno}
+  </select>
 </mapper>

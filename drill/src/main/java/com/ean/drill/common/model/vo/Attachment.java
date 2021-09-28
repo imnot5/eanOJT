@@ -3,6 +3,8 @@ package com.ean.drill.common.model.vo;
 import java.sql.Date;
 import java.util.ArrayList;
 
+import com.ean.drill.board.model.vo.Board;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,4 +27,5 @@ public class Attachment {
 	private Date modifyDate;
 	private int imgLevel;
 	private ArrayList<Attachment> atList;
+	private Board board;
 }
