@@ -7,6 +7,54 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <style>
+body{box-sizing:border-box;}
+
+            .replyTop {
+                margin: 30px 0;
+            }
+            .reply_head {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 10px;
+            }
+            .reply_content {
+                margin-bottom: 15px;
+            }
+
+			.reply_contain{
+				padding-left: 30px;
+			}
+            .reply_contain {
+                display: none;
+                margin: 15px 0;
+            }
+            .rereply{
+            	border: 1px solid black;
+            	margin-bottom: 20px !important;
+            	padding-left: 20px;
+            	background-color:rgba(0, 0, 0, 0.016);
+            }
+            .show {
+                display: block !important;
+            }
+            #rereBlank {
+                width: 100%;
+            }
+            .btn_box {
+                float: right;
+            }
+            .reply_count {
+                margin-bottom: 15px;
+            }
+            
+		textarea{
+			border: 1px solid rgb(233, 236, 239);
+	        color: rgb(33, 37, 41);
+	        width:100%;
+		 }
+		.btn{
+			color: white !important;
+		}
 	.list-area{
 		border: 1px solid black;
 		margin:auto;
@@ -16,14 +64,8 @@
 		width:80%;
 		margin:auto;
 	}
-	.show{
-	 	display:block !important;
-	}
 	.hide{
 		display:none;
-	}
-	#rrBtn{
-		float:right;
 	}
 </style>
 </head>
@@ -49,135 +91,198 @@
 			</div>
 		</div>
 		
-		<div class="reply-area">
-			<table class="table">
-				<thead>
-				<tr>
-				<c:choose>
-					<c:when test="${ empty loginUser }">
-					<th colspan="2">
-						<textarea id="content" cols="55" rows="2" style="resize:none; width:100%" readonly>로그인!</textarea>
-					</th>
-					<th style="vertical-align: middle"><button class="btn btn-secondary" disabled>등록하기</button></th>
-					</c:when>
-					<c:otherwise>
-					<th colspan="2">
-						<textarea id="content" cols="55" rows="2" style="resize:none; width:100%"></textarea>
-					</th>
-					<th style="vertical-align: middle"><button class="btn btn-primary" onclick="insertReply();">등록하기</button></th>
-					</c:otherwise>
-				</c:choose>
-				</tr>
-				
-				
-				<tr>
-					<td colspan="3">댓글(<span id="rpCount"></span>)</td>
-				</tr>
-				</thead>
-				
-				<tbody>
-					<!--  ajax  -->
-				</tbody>
-			</table>
-		</div>
-	</div>
-	
-	<!-- 대댓글창  -->
-	<div class="rereArea">
-	<textarea id="recontent" cols="55" rows="2" style="resize:none; width:100%"></textarea>
-	<button class="btn btn-primary btn-sm" id="rrBtn" onclick="insertReReply();">등록하기</button>
+		<!-- 댓글작성  -->
+            <div class="replyArea">
+            	<!-- 댓글 작성란  -->
+            	<div class="replyTop">
+                <div class="reply_count"><b><span id="count"></span> 개의 댓글</b></div>
+                <c:choose>
+                <c:when test="${ empty loginUser }">
+	                <div class="reply_blank">
+	                    <textarea id="rereBlank" rows="3" style="resize: none" readonly>로그인이 필요합니다</textarea>
+	                </div>
+	                <div class="btn_box">
+	                    <a class="btn btn-success btn-sm disabled">댓글작성</a>
+	                </div>
+                </c:when>
+                <c:otherwise>
+	                <div class="reply_blank">
+	                    <textarea id="reBlank" rows="3" style="resize: none">댓글을 작성하세요</textarea>
+	                </div>
+	                <div class="btn_box">
+	                    <a class="btn btn-success btn-sm" onclick="insertReply();">댓글작성</a>
+	                </div>
+                </c:otherwise>
+                </c:choose>
+            	</div>
+            
+            <!-- 댓글들  -->
+            <div class="reply">
+                <div class="reply_head">
+                    <b>user06</b>
+                    <small>2021-10-03</small>
+                </div>
+                <div class="reply_content">내용내용</div>
+                <a class="btn btn-success btn-sm rereplyBtn">답글달기</a>
+                <hr />
+                <!--대댓글 작성란  -->
+	         	<div class="rereply">
+	                <div class="reply_blank">
+	                    <textarea id="rereBlank" rows="3" style="resize: none">댓글을 작성하세요</textarea>
+	                </div>
+	                <div class="btn_box">
+	                    <a class="btn btn-secondary btn-sm cancleReply">취소</a>
+	                    <a class="btn btn-success btn-sm">댓글작성</a>
+	                </div>
+	            </div>
+            </div>
+
+			<!-- 대댓글이 존재할 경우  -->
+			<div class="reply_contain">
+                <div class="reply_head">
+                    <b>user03</b>
+                    <small>2021-10-03</small>
+                </div>
+                <div class="reply_content">대댓글내용내용</div>
+                <a class="btn btn-success btn-sm rereplyBtn">답글달기</a>
+                <hr />
+			</div>
+
+            </div>
 	</div>
 	
 	<script>
 		$(function(){
 			selectReplyList();
-		})
-		
-		/* 댓글등록 */
-		function insertReply(){
-			if($("#content").val().trim().length != 0){
+			
+			//아코디언테스트
+			$(".rereply").hide();
+			$(document).on("click",".rereplyBtn", function(){
+				console.log("!")
+				if($(this).next().next().css("display") == "none"){
+					$(this).next().next().slideDown("fast");
+				} else {
+					$(this).next().next().slideUp("fast");
+				}
+				
+				if($(this).text() == '답글달기'){
+					$(this).text('숨기기');
+				} else {
+					$(this).text('답글달기')
+				}
+			})
+			/*
+    		$(document).on("click", ".rereplyBtn", function(){
+    			console.log("!!")
+    			 $(".rereply").toggleClass("show");
+    	    	if($(".rereplyBtn").text()=="답글달기"){
+    	    			$(".rereplyBtn").text("숨기기")
+    	    		} else {
+    	    			$(".rereplyBtn").text("답글달기")
+    	    		}
+    		})*/
+
+    		$(document).on("click", ".cancelReply", function(){
+    			$(".rereply").removeClass("show");
+    		})
+			/* 번호가져오기  */
+			var replyNo = $(".rno").val();
+			/* depth */
+			var replyDepth = $("input[name=replyDepth]").val();
+			/* order */
+			var replyOrder = $("input[name=replyOrder]").val();
+			
+			/* 댓글조회  */
+			function selectReplyList(){
+            
 				$.ajax({
-					url:"insertRply.bo",
-					data:{replyContent:$(".reply-area textarea").val()
-						, detailCd: ${b.detailCd}
-						, refBno : ${ b.boardNo }
-						, replyWriter: '${ loginUser.memId}'},
-					type:"post",
-					success:function(status){
-						if(status == "success"){
-							selectReplyList();
-							$("#content").val("");
-						}
+					url:"selectRply.bo",
+					data:{bno: ${b.boardNo}},
+					async:false,
+					success:function(list){
+						console.log(list);
+						var result ="";
+	    				for(var i=0; i<list.length; i++){
+	    					result += "<div class='reply_head'>"
+	    									+"<input type='hidden' class='rno' value="+ list[i].replyNo +">"
+	    									+"<input type='hidden' name='replyDepth' value="+ list[i].replyDepth +">"
+	    									+"<input type='hidden' name='replyOrder' value="+ list[i].replyOrder +">"
+	    									+"<b>"+ list[i].replyWriter + "</b><br>"
+	    									+ "<small>" + list[i].createDate + "</small>"
+	    							+"</div>"
+	    							+ "<div class='reply_content'>"
+	    								+ list[i].replyContent
+	    							+"</div>"
+	    							+"<a class='btn btn-success btn-sm rereplyBtn'>답글달기</a><hr>"
+	    							+"<div class='rereply'>"
+	    								+"<div class='reply_blank'>"
+	    									+"<textarea id='rereBlank' rows='3' style='resize:none'>대댓작성</textarea>"
+	    								+"</div>"
+	    								+"<div class='btn_box'>"
+	    									+"<a class='btn btn-secondary btn-sm cancelReply'>취소</a>"
+	    									+"<a class='btn btn-success btn-sm'>댓글작성</a>"
+	    								+"</div>"
+	    							+"</div>"
+	    				};
+	    				$(".reply").html(result);
+	    				$("#count").html(list.length);
+	    				
 					}, error:function(){
-						console.log("ajax실패")
+						console.log("ajax실패");
 					}
 				})
-			} else {
-				window.alert("유효한 댓글 작성이 필요합니다");
-			}
-		}
-		/* 대댓글구현  */
-		function insertReReply(){
-			$.ajax({
-				url:"insertReRply.bo",
-				data:{replyContent:$(".rereArea textarea").val()
-					, detailCd: {b.detailCd}
-					, refBno: ${b.boardNo}
-					, replyParent: ${r.replyNo}
-					, replyWriter: '${loginUser.memId}'},
-				type:"post",
-				success:function(status){
-					if(status=="success"){
-						selectReplyList();
-						$("#recontent").val("");
-					}
-				}, error:function(){
-					console.log("ajax실패");
-				}
-			})
-		}
-		/* 댓글조회  */
-		function selectReplyList(){
-			$.ajax({
-				url:"selectRply.bo",
-				data:{bno: ${b.boardNo}},
-				success:function(list){
-					console.log(list);
-					var result ="";
-    				for(var i=0; i<list.length; i++){
-    					result += "<tr>"
-    								+ "<td>" + list[i].replyWriter + "</td>"
-    								+ "<td>" + list[i].replyContent + "</td>"
-    								+ "<td>" + list[i].createDate + "</td>"
-    							+ "</tr>"
-    							+ "<tr>"
-    								+"<td colspan='3'><a class='btn btn-success btn-sm' id='rere'>답글달기</a></td>"
-    							+ "</tr>";		
-    				};
-    				$(".reply-area tbody").html(result);
-    				$("#rpCount").html(list.length);
-				}, error:function(){
-					console.log("ajax실패");
-				}
-			})
-		}
-		
-		$(document).on("click", "#rere", function(){
-			console.log("!!");
-			$(".rereArea").toggle(
-					function(){$(".rereArea").addClass("show")},
-					function(){$(".rereArea").removeClass("show")}
-					)
-			if($(this).text() == '답글달기'){
-				$(this).text("숨기기");
-			} else {
-				 $(this).text("답글달기");
 			}
 			
-					//function(){$("#rere").text("답글달기")}
-			//$(this).text("숨기기");
-			//$(".rereArea").addClass("show");
+			/* 대댓글구현  */
+			function insertReReply(){
+				
+				$.ajax({
+					url:"insertReRply.bo",
+					data:{replyContent:$(".rereArea textarea").val()
+						, detailCd: ${b.detailCd}
+						, refBno: ${b.boardNo}
+						, replyParent: replyNo
+						, replyOrder: replyOrder
+						, replyDepth: replyDepth
+						, replyWriter: '${loginUser.memId}'},
+					type:"post",
+					success:function(status){
+						if(status=="success"){
+							selectReplyList();
+							$("#recontent").val("");
+						}
+					}, error:function(){
+						console.log("ajax실패");
+					}
+				})
+			}
+			
+			
+			/* 댓글등록 */
+			function insertReply(){
+				if($("#reBlank").val().trim().length != 0){
+					$.ajax({
+						url:"insertRply.bo",
+						data:{replyContent:$("#reBlank").val()
+							, detailCd: ${b.detailCd}
+							, refBno : ${ b.boardNo }
+							, replyWriter: '${ loginUser.memId}'},
+						type:"post",
+						success:function(status){
+							if(status == "success"){
+								selectReplyList();
+								$("#reBlank").val("");
+							}
+						}, error:function(){
+							console.log("ajax실패")
+						}
+					})
+				} else {
+					window.alert("유효한 댓글 작성이 필요합니다");
+				}
+			}
 		})
+
 	</script>
 </body>
 </html>
