@@ -126,15 +126,29 @@ public class BoardController {
 	@ResponseBody
 	@RequestMapping(value="insertRply.bo")
 	public String insertReply(Reply r) {
+
 		int result = bService.insertReply(r);
 		return result > 0 ? "success" : "fail";
 	}
 	
 	@ResponseBody
 	@RequestMapping(value="selectRply.bo", produces="application/json; charset=utf-8")
-	public String selectReply(int bno) {
+	public String selectReply(int bno, Model model) {
 		int refBno = bno;
 		ArrayList<Reply> list = bService.selectReplyList(refBno);
+		model.addAttribute("list", list);//아니지 그 댓글의 번호가 필요한건데??
 		return new Gson().toJson(list);
+	}
+	
+	
+	@ResponseBody
+	@RequestMapping(value="insertReRply.bo")
+	public String insertReReply(Reply r) {
+		//대댓글 입력
+		r.setReplyParent(r.getReplyNo());
+		r.setReplyDepth(1);
+		
+ 		int result2 = bService.insertReReply(r);
+		return result2 > 0 ? "success" : "fail";
 	}
 }

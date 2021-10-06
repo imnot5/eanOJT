@@ -30,6 +30,8 @@ public interface BoardService {
 
 	//댓글등록
 	int insertReply(Reply r);
+	//대댓글등록
+	int insertReReply(Reply r);
 	
 	//댓글조회
 	ArrayList<Reply> selectReplyList(int refBno);

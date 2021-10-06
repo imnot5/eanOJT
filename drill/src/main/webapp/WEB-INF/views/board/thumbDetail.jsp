@@ -110,7 +110,7 @@ body{box-sizing:border-box;}
 	                    <textarea id="reBlank" rows="3" style="resize: none">댓글을 작성하세요</textarea>
 	                </div>
 	                <div class="btn_box">
-	                    <a class="btn btn-success btn-sm" onclick="insertReply();">댓글작성</a>
+	                    <a class="btn btn-success btn-sm" onclick="insertReply()">댓글작성</a>
 	                </div>
                 </c:otherwise>
                 </c:choose>
@@ -183,67 +183,32 @@ body{box-sizing:border-box;}
     		})*/
 
     		$(document).on("click", ".cancelReply", function(){
-    			$(".rereply").removeClass("show");
+    			$(".rereply").slideUp("fast");
     		})
-			/* 번호가져오기  */
-			var replyNo = $(".rno").val();
+
+			
 			/* depth */
 			var replyDepth = $("input[name=replyDepth]").val();
 			/* order */
 			var replyOrder = $("input[name=replyOrder]").val();
 			
-			/* 댓글조회  */
-			function selectReplyList(){
-            
-				$.ajax({
-					url:"selectRply.bo",
-					data:{bno: ${b.boardNo}},
-					async:false,
-					success:function(list){
-						console.log(list);
-						var result ="";
-	    				for(var i=0; i<list.length; i++){
-	    					result += "<div class='reply_head'>"
-	    									+"<input type='hidden' class='rno' value="+ list[i].replyNo +">"
-	    									+"<input type='hidden' name='replyDepth' value="+ list[i].replyDepth +">"
-	    									+"<input type='hidden' name='replyOrder' value="+ list[i].replyOrder +">"
-	    									+"<b>"+ list[i].replyWriter + "</b><br>"
-	    									+ "<small>" + list[i].createDate + "</small>"
-	    							+"</div>"
-	    							+ "<div class='reply_content'>"
-	    								+ list[i].replyContent
-	    							+"</div>"
-	    							+"<a class='btn btn-success btn-sm rereplyBtn'>답글달기</a><hr>"
-	    							+"<div class='rereply'>"
-	    								+"<div class='reply_blank'>"
-	    									+"<textarea id='rereBlank' rows='3' style='resize:none'>대댓작성</textarea>"
-	    								+"</div>"
-	    								+"<div class='btn_box'>"
-	    									+"<a class='btn btn-secondary btn-sm cancelReply'>취소</a>"
-	    									+"<a class='btn btn-success btn-sm'>댓글작성</a>"
-	    								+"</div>"
-	    							+"</div>"
-	    				};
-	    				$(".reply").html(result);
-	    				$("#count").html(list.length);
-	    				
-					}, error:function(){
-						console.log("ajax실패");
-					}
-				})
-			}
-			
+
+		})
+    		var replyNo = "";
+			/* 번호가져오기  */
+			$(document).on("click", ".rereplyBtn", function(){
+				console.log($(this).prev().prev().children().eq(0).val());
+				replyNo = $(this).prev().prev().children().eq(0).val();
+			})
 			/* 대댓글구현  */
-			function insertReReply(){
+			function insertRereply(){
 				
 				$.ajax({
 					url:"insertReRply.bo",
-					data:{replyContent:$(".rereArea textarea").val()
+					data:{replyContent:$("#rereBlank").val()
 						, detailCd: ${b.detailCd}
 						, refBno: ${b.boardNo}
-						, replyParent: replyNo
-						, replyOrder: replyOrder
-						, replyDepth: replyDepth
+						, replyNo: replyNo
 						, replyWriter: '${loginUser.memId}'},
 					type:"post",
 					success:function(status){
@@ -256,8 +221,6 @@ body{box-sizing:border-box;}
 					}
 				})
 			}
-			
-			
 			/* 댓글등록 */
 			function insertReply(){
 				if($("#reBlank").val().trim().length != 0){
@@ -281,8 +244,54 @@ body{box-sizing:border-box;}
 					window.alert("유효한 댓글 작성이 필요합니다");
 				}
 			}
-		})
-
+		/* 댓글조회  */
+		function selectReplyList(){
+        
+			$.ajax({
+				url:"selectRply.bo",
+				data:{bno: ${b.boardNo}},
+				async:false,
+				success:function(list){
+					console.log(list);
+					var result ="";
+    				for(var i=0; i<list.length; i++){
+    					result += "<div class='reply_head'>"
+    									+"<input type='hidden' class='rno' value="+ list[i].replyNo +">"
+    									+"<input type='hidden' name='replyDepth' value="+ list[i].replyDepth +">"
+    									+"<input type='hidden' name='replyOrder' value="+ list[i].replyOrder +">"
+    									+"<b>"+ list[i].replyWriter + "</b><br>"
+    									+ "<small>" + list[i].createDate + "</small>"
+    							+"</div>"
+    							+ "<div class='reply_content'>"
+    								+ list[i].replyContent
+    							+"</div>";
+    							
+    					if(list[i].depth > 0){//여기서 if문으로?depth>0이면 버튼이 답글달기가 아니라 n개의 답글보기로 바꾸기
+    						result += "<a class='btn btn-success btn-sm rereplyBtn'>" + list.length + "개의 답글</a><hr>"
+    						//해당 댓글을 넣어줘야하는데 반복문으로 어떻게 돌리냥
+    						
+    					} else {
+    						result += "<a class='btn btn-success btn-sm rereplyBtn'>답글달기</a><hr>"
+    								+"<div class='rereply'>"
+											+"<div class='reply_blank'>"
+											+"<textarea id='rereBlank' rows='3' style='resize:none'>대댓작성</textarea>"
+										+"</div>"
+										+"<div class='btn_box'>"
+											+"<a class='btn btn-secondary btn-sm cancelReply'>취소</a>"
+											+"<a class='btn btn-success btn-sm' onclick='insertRereply()'>댓글작성</a>"
+										+"</div>"
+									+"</div>"
+    					}
+    							
+    				};
+    				$(".reply").html(result);
+    				$("#count").html(list.length);
+    				
+				}, error:function(){
+					console.log("ajax실패");
+				}
+			})
+		}
 	</script>
 </body>
 </html>

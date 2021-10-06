@@ -71,6 +71,16 @@ public class BoardDao {
 		return sqlSession.insert("boardMapper.insertReply", r);
 	}
 	
+	//대댓글 등록
+	public int insertReReply(SqlSessionTemplate sqlSession, Reply r) {
+		//대댓글순서가져오기
+		System.out.println(r.getReplyParent());
+		int order = sqlSession.selectOne("boardMapper.selectOrder", r);
+		System.out.println(order);
+		r.setReplyOrder(order +1);
+		return sqlSession.insert("boardMapper.insertReReply",r);
+	}
+	
 	//댓글조회
 	public ArrayList<Reply> selectReplyList(SqlSessionTemplate sqlSession, int refBno){
 		return (ArrayList)sqlSession.selectList("boardMapper.selectReply", refBno);

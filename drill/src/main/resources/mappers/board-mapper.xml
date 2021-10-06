@@ -268,6 +268,45 @@
 	  )  
   </insert>
   
+  <select id="selectOrder" parameterType="Reply" resultType="_int">
+  	select 
+  		   max(reply_order)
+  	  from test_reply 
+  	 where reply_no = #{replyParent}
+  </select>
+  
+  <insert id="insertReReply" parameterType="Reply">
+	insert
+	  into test_reply
+	  (
+	  	   reply_no
+	  	 , ref_bno
+	  	 , detail_cd
+	  	 , reply_depth
+	  	 , reply_parent
+	  	 , reply_order
+	  	 , reply_writer
+	  	 , reply_content
+	  	 , create_date
+	  	 , modify_date
+	  	 , status
+	  )
+	values
+	  (
+	  	   seq_rno.nextval
+	  	 , #{refBno}
+	  	 , #{detailCd}
+	  	 , #{replyDepth}
+	  	 , #{replyParent}
+	  	 , #{replyOrder}
+	  	 , #{replyWriter}
+	  	 , #{replyContent}
+	  	 , default
+	  	 , null
+	  	 , 'Y'
+	  )  
+  </insert>
+  
   <select id="selectReply" parameterType="Reply" resultMap="replyResultSet">
   	select
   		   reply_no
